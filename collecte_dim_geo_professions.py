@@ -23,15 +23,15 @@ def ajouter_si_absent(session, Model, **kwargs):
     if not session.query(Model).filter_by(**filtre).first():
         session.add(Model(**kwargs))
 
-print("=== Collecte dimensions géographiques et professions ===")
+print(" Collecte dimensions géographiques et professions")
 
-# --- Régions ---
+# Régions
 for rec in get_distinct("region, libelle_region", "region, libelle_region"):
     ajouter_si_absent(session, Region, code=rec.get("region"), libelle=rec.get("libelle_region"))
 session.commit()
 print(f" Régions : {session.query(Region).count()}")
 
-# --- Départements ---
+#Départements
 region_map = {r.code: r.id for r in session.query(Region).all()}
 for rec in get_distinct("departement, libelle_departement, region", "departement, libelle_departement, region"):
     code = rec.get("departement")
@@ -43,21 +43,21 @@ for rec in get_distinct("departement, libelle_departement, region", "departement
 session.commit()
 print(f" Départements : {session.query(Departement).count()}")
 
-# --- Professions ---
+# Professions
 for rec in get_distinct("profession_sante", "profession_sante"):
     if rec.get("profession_sante"):
         ajouter_si_absent(session, ProfessionSante, libelle=rec["profession_sante"])
 session.commit()
 print(f" Professions : {session.query(ProfessionSante).count()}")
 
-# --- Tranches d'âge ---
+#Tranches d'âge
 for rec in get_distinct("libelle_classe_age", "libelle_classe_age"):
     if rec.get("libelle_classe_age"):
         ajouter_si_absent(session, TrancheAge, libelle=rec["libelle_classe_age"])
 session.commit()
 print(f" Tranches d'âge : {session.query(TrancheAge).count()}")
 
-# --- Sexe ---
+#  Sexe
 for rec in get_distinct("libelle_sexe", "libelle_sexe"):
     if rec.get("libelle_sexe"):
         ajouter_si_absent(session, Sexe, libelle=rec["libelle_sexe"])
@@ -65,4 +65,4 @@ session.commit()
 print(f" Sexe : {session.query(Sexe).count()}")
 
 session.close()
-print("=== Terminé ===")
+print("Terminé")
