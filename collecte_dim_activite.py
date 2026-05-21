@@ -13,7 +13,7 @@ BASE = "https://data.ameli.fr/api/explore/v2.1/catalog/datasets"
 
 print("=== Collecte types d'exercice et secteurs ===")
 
-# --- Types d'exercice ---
+# Types d'exercice
 resp = requests.get(
     f"{BASE}/demographie-exercices-liberaux/records",
     params={"select": "libelle_type_exercice_liberal", "group_by": "libelle_type_exercice_liberal", "limit": 50}
@@ -25,7 +25,7 @@ for rec in resp.json().get("results", []):
 session.commit()
 print(f" Types d'exercice : {session.query(TypeExercice).count()}")
 
-# --- Secteurs conventionnels ---
+# Secteurs conventionnels
 SECTEURS = [
     ("S1", "Secteur 1 - Honoraires opposables"),
     ("S2", "Secteur 2 - Honoraires libres avec tact et mesure"),
@@ -40,4 +40,4 @@ session.commit()
 print(f" Secteurs conventionnels : {session.query(TypeSecteur).count()}")
 
 session.close()
-print("=== Terminé ===")
+print(" Terminé")

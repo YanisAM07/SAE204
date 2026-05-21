@@ -9,7 +9,7 @@ url = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.ge
 engine = create_engine(url)
 session = sessionmaker(bind=engine)()
 
-print("=== Contenu de la base ===")
+print("Contenu de la base")
 print(f"Régions            : {session.query(Region).count():>4} (attendu : ~18)")
 print(f"Départements       : {session.query(Departement).count():>4} (attendu : ~101)")
 print(f"Professions        : {session.query(ProfessionSante).count():>4} (attendu : ~32)")

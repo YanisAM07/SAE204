@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-# --- Dimensions géographiques ---
+# Dimensions géographiques
 class Region(Base):
     __tablename__ = "region"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -25,7 +25,7 @@ class Departement(Base):
     def __repr__(self): 
         return f"{self.code} {self.libelle}"
 
-# --- Dimensions métier ---
+#Dimensions métier
 class ProfessionSante(Base):
     __tablename__ = "profession_sante"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -50,7 +50,7 @@ class Sexe(Base):
     def __repr__(self): 
         return self.libelle
 
-# --- Dimensions d'activité ---
+# Dimensions d'activité
 class TypeExercice(Base):
     __tablename__ = "type_exercice"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -68,7 +68,7 @@ class TypeSecteur(Base):
     def __repr__(self): 
         return f"{self.code} {self.libelle}"
 
-# --- Dimensions financières ---
+# Dimensions financières
 class TypeHonoraire(Base):
     __tablename__ = "type_honoraire"
     id = Column(Integer, primary_key=True, autoincrement=True)

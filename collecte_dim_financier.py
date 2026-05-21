@@ -13,7 +13,7 @@ BASE = "https://data.ameli.fr/api/explore/v2.1/catalog/datasets"
 
 print("=== Collecte types d'honoraires et prescriptions ===")
 
-# --- Types d'honoraires ---
+# Types d'honoraires
 SELECT_H = "type_honoraire_niveau_1,type_honoraire_niveau_2,type_honoraire_niveau_3"
 resp = requests.get(
     f"{BASE}/honoraires/records",
@@ -31,7 +31,7 @@ for rec in resp.json().get("results", []):
 session.commit()
 print(f" Types d'honoraires : {session.query(TypeHonoraire).count()}")
 
-# --- Types de prescriptions ---
+# Types de prescriptions
 resp = requests.get(
     f"{BASE}/prescriptions/records",
     params={"select": "libelle_poste_prescription", "group_by": "libelle_poste_prescription", "limit": 100}
@@ -44,4 +44,4 @@ session.commit()
 print(f" Types de prescriptions : {session.query(TypePrescription).count()}")
 
 session.close()
-print("=== Terminé ===")
+print("Terminé")
