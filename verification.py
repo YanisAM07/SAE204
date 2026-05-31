@@ -20,7 +20,6 @@ print(f"Secteurs conv.     : {session.query(TypeSecteur).count():>4} (attendu : 
 print(f"Types honoraires   : {session.query(TypeHonoraire).count():>4} (attendu : ~20)")
 print(f"Types prescription : {session.query(TypePrescription).count():>4} (attendu : ~10)")
 
-# Test de la hiérarchie
 print("\n=== Départements d'Île-de-France ===")
 idf = session.query(Region).filter(Region.libelle == "Ile-de-France").first()
 if idf:
