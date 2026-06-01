@@ -48,17 +48,17 @@ Le code est structuré en plusieurs scripts PHP/Python qui correspondent à la p
 Pour déployer et alimenter la base de données, les scripts doivent être exécutés dans cet ordre précis :
 
 ### 1. Initialisation du schéma
-* `nettoyage_db.py`** *(Optionnel)* : Pour partir d'une base vierge.
-* `create_tables.py`** : Instancie l'ensemble de la structure relationnelle finale dans MySQL à partir des métadonnées SQLAlchemy.
+* `nettoyage_db.py` : Pour partir d'une base vierge.
+* `create_tables.py` : Instancie l'ensemble de la structure relationnelle finale dans MySQL à partir des métadonnées SQLAlchemy.
 
 ### 2. Phase d'alimentation (ETL) via l'API Ameli
 Une fois les tables prêtes, la collecte s'effectue par thématique, en gérant la pagination pour extraire les valeurs uniques (`group_by`) :
-* `collecte_dim_geo_professions.py`**
-* `collecte_dim_activite.py`**
-* `collecte_dim_financier.py`**
+* `collecte_dim_geo_professions.py`
+* `collecte_dim_activite.py`
+* `collecte_dim_financier.py`
 
 ### 3. Contrôle et Validation
-* `verification.py`** : Exécute des requêtes de comptage (`COUNT`) sur chaque table pour s'assurer que le volume de données insérées est conforme aux attendus régionaux et nationaux.
+* `verification.py` : Exécute des requêtes de comptage (`COUNT`) sur chaque table pour s'assurer que le volume de données insérées est conforme aux attendus régionaux et nationaux.
 
 ---
 ## Conclusion technique
