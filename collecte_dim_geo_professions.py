@@ -12,52 +12,65 @@ session = sessionmaker(bind=engine)()
 BASE = "https://data.ameli.fr/api/explore/v2.1/catalog/datasets"
 DS = "demographie-effectifs-et-les-densites"
 
+
 def get_distinct(select_fields, group_by_fields):
-    """Retourne les valeurs distinctes via group_by (1 seule requête)."""
-    params = {"select": select_fields, "group_by": group_by_fields, "limit": 100}
+    """Retourne les valeurs distinctes via group_by."""
+
+    params = {"select": select_fields, "group_by": group_by_fields, "limit": 200}
     return requests.get(f"{BASE}/{DS}/records", params=params).json().get("results", [])
 
+
 def ajouter_si_absent(session, Model, **kwargs):
-    """Insère l'objet uniquement s'il n'existe pas déjà."""
+    """Insère l'objet uniquement s'il n'existe pas déjà en base (idempotent)."""
+    # On exclut les valeurs None du filtre pour éviter les erreurs
     filtre = {k: v for k, v in kwargs.items() if v is not None}
     if not session.query(Model).filter_by(**filtre).first():
         session.add(Model(**kwargs))
 
-print(" Collecte dimensions géographiques et professions")
 
-# Régions
-for rec in get_distinct("region, libelle_region", "region, libelle_region"):
+print("=== Collecte dimensions géographiques et professions ===")
+
+# --- Régions ---
+# On insère les régions EN PREMIER CAr les départements en dépendent (clé étrangère)
+for rec in get_distinct("region,libelle_region", "region,libelle_region"):
     ajouter_si_absent(session, Region, code=rec.get("region"), libelle=rec.get("libelle_region"))
 session.commit()
 print(f" Régions : {session.query(Region).count()}")
 
-#Départements
+# --- Départements ---
+# On construit un dictionnaire code_region → id pour remplir la clé étrangère region_id
 region_map = {r.code: r.id for r in session.query(Region).all()}
-for rec in get_distinct("departement, libelle_departement, region", "departement, libelle_departement, region"):
+
+for rec in get_distinct(
+    "departement,libelle_departement,region",
+    "departement,libelle_departement,region"
+):
     code = rec.get("departement")
     libelle = rec.get("libelle_departement")
     rcode = rec.get("region")
-    
-    if code and libelle and rcode in region_map:
+
+    # On exclut le code "999" qui représente "Tout département" (agrégat, pas un vrai département)
+    if code and code != "999" and libelle and rcode in region_map:
         ajouter_si_absent(session, Departement, code=code, libelle=libelle, region_id=region_map[rcode])
+
 session.commit()
 print(f" Départements : {session.query(Departement).count()}")
 
-# Professions
+# --- Professions de santé ---
 for rec in get_distinct("profession_sante", "profession_sante"):
     if rec.get("profession_sante"):
         ajouter_si_absent(session, ProfessionSante, libelle=rec["profession_sante"])
 session.commit()
 print(f" Professions : {session.query(ProfessionSante).count()}")
 
-#Tranches d'âge
+# --- Tranches d'âge ---
 for rec in get_distinct("libelle_classe_age", "libelle_classe_age"):
     if rec.get("libelle_classe_age"):
         ajouter_si_absent(session, TrancheAge, libelle=rec["libelle_classe_age"])
 session.commit()
 print(f" Tranches d'âge : {session.query(TrancheAge).count()}")
 
-#  Sexe
+# --- Sexe ---
 for rec in get_distinct("libelle_sexe", "libelle_sexe"):
     if rec.get("libelle_sexe"):
         ajouter_si_absent(session, Sexe, libelle=rec["libelle_sexe"])
@@ -65,4 +78,4 @@ session.commit()
 print(f" Sexe : {session.query(Sexe).count()}")
 
 session.close()
-print("Terminé")
+print("=== Terminé ===")

@@ -9,7 +9,7 @@ url = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.ge
 engine = create_engine(url)
 session = sessionmaker(bind=engine)()
 
-print("Contenu de la base")
+print("=== Contenu de la base ===")
 print(f"Régions            : {session.query(Region).count():>4} (attendu : ~18)")
 print(f"Départements       : {session.query(Departement).count():>4} (attendu : ~101)")
 print(f"Professions        : {session.query(ProfessionSante).count():>4} (attendu : ~32)")
@@ -21,9 +21,15 @@ print(f"Types honoraires   : {session.query(TypeHonoraire).count():>4} (attendu 
 print(f"Types prescription : {session.query(TypePrescription).count():>4} (attendu : ~10)")
 
 print("\n=== Départements d'Île-de-France ===")
-idf = session.query(Region).filter(Region.libelle == "Ile-de-France").first()
+idf = session.query(Region).filter(Region.libelle == "Île-de-France").first()
+
 if idf:
     for dept in idf.departements:
         print(f" - {dept.code} {dept.libelle}")
+else:
+    # Si toujours None affiche toutes les régions pour trouver le bon libellé
+    print(" Région non trouvée. Libellés disponibles :")
+    for r in session.query(Region).all():
+        print(f"   '{r.libelle}'")
 
 session.close()
